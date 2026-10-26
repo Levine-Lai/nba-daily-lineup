@@ -1,0 +1,22 @@
+{
+  "name": "nba-daily-lineup",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node scripts/test-nba.mjs && node scripts/test-pages.mjs",
+    "data:collect": "python scripts/collect.py",
+    "data:build": "node scripts/build-data.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.0.2",
+    "vite": "8.3.5"
+  }
+}
