@@ -29,6 +29,7 @@ export default function Scatter({rows,lineup,onPlayer}){
  const mx=Math.max(...valid.map(p=>p[x]),1)*1.08,my=Math.max(...valid.map(p=>p[y]),1)*1.12;
  const left=64,right=width-48,top=48,bottom=570;
  const selected=visible.find(p=>p.id===active)||visible.find(p=>lineup.includes(p.id))||visible[0];
+ useEffect(()=>{if(!selected||!viewport.current)return;const frame=viewport.current;const px=(left+selected[x]/mx*(right-left))*zoom,py=(bottom-selected[y]/my*(bottom-top))*zoom;frame.scrollTo({left:Math.max(0,px-frame.clientWidth/2),top:Math.max(0,py-frame.clientHeight/2),behavior:'instant'});},[zoom,query,position,x,y,width]);
  const sorted=[...visible].sort((a,b)=>Number(lineup.includes(a.id))-Number(lineup.includes(b.id))||Number(a.id===selected?.id)-Number(b.id===selected?.id));
  const labelValue=(v,field)=>field==='ts'?fmt(v*100)+'%':field==='usage'||field==='modelSelection'?fmt(v)+'%':fmt(v,field==='value'?2:1);
  return <section ref={section} className={`panel section avatar-scatter${full?' chart-fullscreen':''}`} role={full?'dialog':undefined} aria-modal={full||undefined} aria-label={full?'放大球员对比图':undefined}>
