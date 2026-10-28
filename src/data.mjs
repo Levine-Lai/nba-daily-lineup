@@ -4,7 +4,8 @@ export async function loadModel(target){
  const manifest=await read('data/manifest.json');
  const date=target||manifest.dates.find(d=>Date.parse(manifest.slates[d].deadline)>Date.now())||manifest.defaultDate;
  if(!manifest.dates.includes(date))throw Error('该比赛日尚未生成，请选择已发布日期');
- const model=await read('data/'+date+'.json');
+ const [model,defense]=await Promise.all([read('data/'+date+'.json'),read('data/position-defense.json').catch(()=>null)]);
+ model.positionDefense=defense;
  if(model.date!==date)throw Error('数据日期不匹配，请稍后刷新');
  model.availableDates=manifest.dates;
  model.meta.publishedAt=manifest.generatedAt;

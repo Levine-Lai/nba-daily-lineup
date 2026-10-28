@@ -13,3 +13,9 @@ GitHub Pages静态托管。GitHub Actions每小时第17、47分钟尝试采集�
 本地：`npm ci`，`python scripts/collect.py`，`npm run data:build`，`npm test`，`npm run build`。`npm run dev` 预览。
 
 模型细节在网页“数据口径”中。初版启发式系数和正态情景尚未完成历史回测。参考了 [Fantasy EFL 数据看板](https://github.com/Levine-Lai/fantasy-efl-dashboard) 的展示思路；本项目计分和推荐针对BAO5篮球规则。
+
+## 球队位置防守
+
+位置攻防页使用 Hashtag Basketball 的公开全赛季、每48分钟对位置产出，覆盖30队×PG/SG/SF/PF/C。得分、篮板、助攻、抢断、盖帽及失误按 BAO5 规则重算积分；排名在同一位置内计算，失误反向解释。不直接沿用源站综合排名，也不额外乘入球员预期。球队登记位置不代表实际一对一盯防，赛季初样本未经赛程强度及节奏校正。
+
+`python scripts/collect-dvp.py` 每30分钟随工作流尝试采集，源站按日更新；保留源站日期和成功抓取时间。源站失败时保留旧位置快照并标记。BAO5 采集失败时，工作流恢复最后成功发布且仍有开放比赛日的快照，保留原始采集时间并在界面显著提示；无可用快照则停止发布。

@@ -32,7 +32,13 @@ jobs:
           restore-keys: nba-data-v1-
       - run: npm ci
       - run: python scripts/collect.py
+        id: collect
+        continue-on-error: true
       - run: npm run data:build
+        if: steps.collect.outcome == 'success'
+      - run: node scripts/restore-published.mjs
+        if: steps.collect.outcome == 'failure'
+      - run: python scripts/collect-dvp.py
       - run: npm test
       - run: npm run build
       - uses: actions/configure-pages@v5

@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node scripts/test-nba.mjs && node scripts/test-pages.mjs && node scripts/test-chart-scale.mjs",
+    "test": "node scripts/test-nba.mjs && node scripts/test-pages.mjs && node scripts/test-chart-scale.mjs && node scripts/test-dvp.mjs && python scripts/test-dvp-parser.py",
     "data:collect": "python scripts/collect.py",
     "data:build": "node scripts/build-data.mjs"
   },

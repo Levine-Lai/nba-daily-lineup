@@ -4,6 +4,7 @@ import {useState,useMemo,useEffect,useRef} from 'react';
 import {loadModel} from './data.mjs';
 import {CN,optimize,beijing,strategyScore} from '../lib/nba/model.mjs';
 import Scatter from './Scatter';
+import PositionDefense from './PositionDefense';
 import Select from './Select';
 import EnergyFilter,{matchesEnergy} from './EnergyFilter';
 import './controls.css';
@@ -49,7 +50,7 @@ function Drawer({p,model,onClose}){
 
 export default function Home({initial}){
  const [energyRange,setEnergyRange]=useState({min:'',max:''});
- const [model,setModel]=useState(initial),[date,setDate]=useState(initial.date),[tab,setTab]=useState('overview'),[strategy,setStrategy]=useState('balanced'),[excluded,setExcluded]=useState([]),[locked,setLocked]=useState([]),[player,setPlayer]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const [model,setModel]=useState(initial),[date,setDate]=useState(initial.date),[tab,setTab]=useState(()=>{const view=new URLSearchParams(window.location.search).get('view');return ['overview','players','matchups','positions','ownership','sources'].includes(view)?view:'overview';}),[strategy,setStrategy]=useState('balanced'),[excluded,setExcluded]=useState([]),[locked,setLocked]=useState([]),[player,setPlayer]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const [avoidB2B,setAvoidB2B]=useState(()=>new URLSearchParams(window.location.search).get('avoidB2B')==='1');
  const effectiveExcluded=useMemo(()=>[...new Set([...excluded,...(avoidB2B?model.rows.filter(p=>p.b2b&&!p.injuriesFresh).map(p=>p.id):[])])],[excluded,avoidB2B,model]);
  const requestId=useRef(0); const selection=useRef({date:initial.date,deadline:initial.deadline});
@@ -62,10 +63,11 @@ export default function Home({initial}){
  async function refresh(target){const id=++requestId.current;setBusy(true);setError('');try{const requested=target??(Date.parse(selection.current.deadline)>Date.now()?selection.current.date:undefined);const data=await loadModel(requested);if(id===requestId.current){const changed=selection.current.date!==data.date;selection.current={date:data.date,deadline:data.deadline};setModel(data);setDate(data.date);if(changed){setExcluded([]);setLocked([]);}else{setExcluded(xs=>xs.filter(id=>data.rows.some(p=>p.id===id)));setLocked(xs=>xs.filter(id=>data.rows.some(p=>p.id===id&&p.eligible)));}setPlayer(p=>p?(data.rows.find(q=>q.id===p.id)||null):null);}}catch(e){if(id===requestId.current){setError(e.message);setDate(selection.current.date);}}finally{if(id===requestId.current)setBusy(false);}}
  useEffect(()=>{const timer=setInterval(()=>refresh(),300000);return()=>clearInterval(timer);},[]);
  function exportCSV(){const header=['球员','球队','位置','能量','预期积分','性价比','赛季场均','使用率','TS','模型频率','当日真实持有率','历史持有率日期','历史持有率','伤病'];const rows=model.rows.map(p=>[p.name,teamName(p.team),p.position==='front'?'前场':'后场',p.energy,p.expected,p.value,p.average,p.usage,p.ts,p.modelSelection,p.todayOwnership,p.historical?.date,p.historical?.percent,p.status.label]);const csv='\uFEFF'+[header,...rows].map(row=>row.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download=`NBA-${model.date}.csv`;a.click();URL.revokeObjectURL(url);}
- const tabs=[['overview','每日选阵'],['players','球员数据'],['matchups','对阵分析'],['ownership','持有率 / 对冲'],['sources','数据口径']];
+ const tabs=[['overview','每日选阵'],['players','球员数据'],['matchups','对阵分析'],['positions','位置攻防'],['ownership','持有率 / 对冲'],['sources','数据口径']];
  return <div className="shell"><header className="mast"><a className="brand" href={import.meta.env.BASE_URL} aria-label="NBA每日选阵首页"><span className="brand-mark">NBA</span><div><h1>每日选阵</h1><small>BAO5 · {model.season}</small></div></a><div className="mast-actions"><div className="sync-text subtle">快照 {model.meta.fetchedAt?beijing(model.meta.fetchedAt).slice(5,16):'—'}<br/>北京时间</div><button onClick={exportCSV}>导出 CSV</button><button className="primary" onClick={()=>refresh()} disabled={busy} aria-busy={busy}>{busy?'正在刷新…':'刷新数据'}</button></div></header>
  <div className="datebar"><div className="date-control"><h2>{model.date.replaceAll('-','.')}</h2><Select aria-label="选择比赛日" value={date} disabled={busy} onChange={e=>{setDate(e.target.value);refresh(e.target.value);}}>{model.availableDates.map(d=><option key={d} value={d}>{d}</option>)}</Select><span className="badge blue">{model.games.length} 场比赛</span></div><div className="subtle">提交截止 <b>{beijing(model.deadline).slice(5,16)}</b> · 150 能量 / 5 人</div></div>
  {error&&<div className="notice error" role="alert">{error}</div>}{busy&&<div className="notice" role="status">正在读取最新已发布数据…</div>}
+ {model.meta.collectionWarning&&<div className="notice" role="status">{model.meta.collectionWarning} · 原始采集 {beijing(model.meta.fetchedAt).slice(5,16)}</div>}
  {model.meta.injuryDate!==model.date&&<div className="notice">预选版 · 伤病接口返回 {model.meta.injuryDate}，当日状态尚未齐全；赛前刷新确认。</div>}
  <nav className="tabs" aria-label="数据视图" role="tablist">{tabs.map(([id,label])=><button role="tab" key={id} aria-selected={tab===id} onClick={()=>setTab(id)}>{label}</button>)}</nav>
  <main>
@@ -79,6 +81,7 @@ export default function Home({initial}){
  <Scatter energyRange={energyRange} setEnergyRange={setEnergyRange} rows={model.rows} lineup={ids} onPlayer={setPlayer}/><PlayerTable energyRange={energyRange} setEnergyRange={setEnergyRange} model={model} lineup={ids} excluded={excluded} setExcluded={setExcluded} locked={locked} setLocked={setLocked} onPlayer={setPlayer}/><Methods/>
  </>}
  {tab==='players'&&<><Scatter energyRange={energyRange} setEnergyRange={setEnergyRange} rows={model.rows} lineup={ids} onPlayer={setPlayer}/><PlayerTable energyRange={energyRange} setEnergyRange={setEnergyRange} model={model} lineup={ids} excluded={excluded} setExcluded={setExcluded} locked={locked} setLocked={setLocked} onPlayer={setPlayer}/><div className="section-note">{locked.length} 人锁定 · {excluded.length} 人排除 · 当前组合预期 {fmt(total)} 分。返回“每日选阵”查看阵容。</div></>}
+ {tab==='positions'&&<PositionDefense model={model} onPlayer={setPlayer} energyRange={energyRange} setEnergyRange={setEnergyRange}/>}
  {tab==='matchups'&&<><Matchups model={model}/><Methods/></>}
  {tab==='ownership'&&<><Ownership model={model} onPlayer={setPlayer}/><Methods/></>}
  {tab==='sources'&&<Sources model={model}/>}
