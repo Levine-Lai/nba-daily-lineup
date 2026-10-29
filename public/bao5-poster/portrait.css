@@ -96,4 +96,4 @@ header .brand{position:absolute;left:0;top:-24px;z-index:4}header .official-logo
 .rule:nth-child(2) .prize .avatar{left:20px;top:-16px;width:280px;height:280px}
 .rule:nth-child(2) .prize .avatar img{width:280px;height:280px}
 .rule:nth-child(2) .prize .reward-heading{top:272px;width:320px;justify-content:center;text-align:center}
-.rule:nth-child(2) .prize .reward-heading p{font-size:18px;text-align:center}
+.rule:nth-child(2) .prize .reward-heading p{font-size:18px;text-align:center;color:#8edcff;font-weight:700}
