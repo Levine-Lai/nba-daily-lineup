@@ -77,11 +77,16 @@ header .brand{position:absolute;left:0;top:-24px;z-index:4}header .official-logo
 
 .player-slot-5 .player-image img{transform:scale(.9);transform-origin:center bottom}
 
-/* Bright blue diagonal book-title brackets frame the welcome line. */
-.welcome{position:relative;width:max-content;margin-left:auto;margin-right:auto;color:#8edcff;text-shadow:0 0 20px #299dff55}.welcome-bracket{position:absolute;display:block;font-family:var(--font-pixel);font-size:56px;line-height:1;color:#32baff;text-shadow:2px 2px 0 #075bb8,0 0 18px #168fff88}.welcome-bracket.opening{left:-56px;top:-21px}.welcome-bracket.closing{right:-56px;bottom:-21px}
-
-/* Pixel corner quotation marks, matching the supplied reference. */
-.welcome-bracket{font-size:0;width:22px;height:30px;letter-spacing:0;border-color:#63ceff;border-style:solid;border-width:0;filter:drop-shadow(2px 2px 0 #075bb8);text-shadow:none}.welcome-bracket.opening{left:-34px;top:0;border-left-width:5px;border-top-width:5px}.welcome-bracket.closing{right:-34px;bottom:0;border-right-width:5px;border-bottom-width:5px}
+/* The welcome line, including its quotation marks, is editable text. */
+.welcome{position:relative;width:max-content;max-width:100%;margin-left:auto;margin-right:auto;color:#8edcff;text-shadow:0 0 20px #299dff55;cursor:text;white-space:pre-wrap}.welcome:focus-visible{outline:1px dashed #8edcff;outline-offset:8px}
 
 /* Use the welcome blue for rule emphasis and both schedule dates. */
 .rules strong{color:#8edcff}
+
+/* Narrow the season copy to make room for the avatar and its full caption. */
+.rule:nth-child(2) .season-copy{width:500px;max-width:500px;font-size:24px;line-height:1.85}
+.rule:nth-child(2) .prize{right:16px;top:32px;width:320px}
+.rule:nth-child(2) .prize .avatar{left:30px;width:260px;height:260px}
+.rule:nth-child(2) .prize .avatar img{width:260px;height:260px}
+.rule:nth-child(2) .prize .reward-heading{top:278px;width:320px}
+.rule:nth-child(2) .prize .reward-heading p{font-size:17px}
