@@ -83,10 +83,17 @@ header .brand{position:absolute;left:0;top:-24px;z-index:4}header .official-logo
 /* Use the welcome blue for rule emphasis and both schedule dates. */
 .rules strong{color:#8edcff}
 
-/* Narrow the season copy to make room for the avatar and its full caption. */
-.rule:nth-child(2) .season-copy{width:500px;max-width:500px;font-size:24px;line-height:1.85}
-.rule:nth-child(2) .prize{right:16px;top:32px;width:320px}
-.rule:nth-child(2) .prize .avatar{left:30px;width:260px;height:260px}
-.rule:nth-child(2) .prize .avatar img{width:260px;height:260px}
-.rule:nth-child(2) .prize .reward-heading{top:278px;width:320px}
-.rule:nth-child(2) .prize .reward-heading p{font-size:17px}
+/* Consistent body type; only the main BAO5 title retains its pixel font. */
+:root{--font-body:'Microsoft YaHei','微软雅黑',sans-serif;--font-rules:var(--font-body);--font-display:var(--font-body);--poster-copy-size:28px}
+.welcome,.rules,.rules h2,.rules p,.rules strong,.step,.step b,.player-score,.player-score span,.elimination-stamp{font-family:var(--font-body)}
+.welcome,.rules strong,.season-dates strong,.step b{font-weight:700}
+.rules>.rule>p,.rule:nth-child(2) .season-copy{font-size:var(--poster-copy-size)}
+.rule:nth-child(2) .season-copy{width:500px;max-width:500px;line-height:1.5}
+.season-overview>span{display:block;white-space:nowrap;text-align:left;text-align-last:auto}
+.notes-rule p{width:548px;max-width:548px}
+.season-dates{margin-top:16px}
+.rule:nth-child(2) .prize{right:16px;top:16px;width:320px;height:320px}
+.rule:nth-child(2) .prize .avatar{left:20px;top:-16px;width:280px;height:280px}
+.rule:nth-child(2) .prize .avatar img{width:280px;height:280px}
+.rule:nth-child(2) .prize .reward-heading{top:272px;width:320px;justify-content:center;text-align:center}
+.rule:nth-child(2) .prize .reward-heading p{font-size:18px;text-align:center}
