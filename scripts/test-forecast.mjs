@@ -17,6 +17,9 @@ assert.deepEqual(rows.map(p=>p.expected),before,'ownership must never change poi
 assert.ok(Math.abs(rows.reduce((s,p)=>s+p.predictedOwnership,0)-500)<1e-8);
 assert.ok(rows.reduce((s,p)=>s+p.predictedOwnership*p.energy/100,0)<=150+1e-8);
 for(const ids of ownership.portfolios){const a=rows.filter(p=>ids.includes(p.id));assert.equal(a.length,5);assert.ok([2,3].includes(a.filter(p=>p.position==='front').length));}
+const extended=rows.map(p=>({...p})).concat({...rows[0],id:'irrelevant',expected:-1000,average:-1000,value:-50});
+estimateOwnership(extended,'2026-11-24',optimize,{samples:18});
+assert.deepEqual(extended.slice(0,rows.length).map(p=>p.predictedOwnership),rows.map(p=>p.predictedOwnership),'irrelevant players must not shift other players random preference draws');
 const base=rows[0];assert.ok(ownershipSignal({...base,recentTrend:10},'2026-11-24').form>ownershipSignal(base,'2026-11-24').form);
 const model={rows,ownership:{profiles:ownership.profiles}};
 const survival=survivalRecommendation(model,optimize,{training:25,validation:40});
