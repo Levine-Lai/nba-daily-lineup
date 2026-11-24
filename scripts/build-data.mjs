@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {project,nextDate,getDates} from '../lib/nba/model.mjs';
+import {survivalRecommendation} from '../lib/nba/survival.mjs';
+import {optimize,project,nextDate,getDates} from '../lib/nba/model.mjs';
 const file=fs.existsSync('data/collected.json')?'data/collected.json':'lib/nba/initial.json';
 const raw=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const first=nextDate(raw);
@@ -9,6 +10,7 @@ const output='public/data';fs.mkdirSync(output,{recursive:true});
 const slates={};
 for(const date of dates){
  const model=project(raw,date);model.availableDates=dates;
+ model.survival=survivalRecommendation(model,optimize);
  if(model.lineup.length!==5)throw Error(date+': no valid lineup; refusing incomplete publication');
  model.meta.updateIntervalMinutes=30;
  fs.writeFileSync(path.join(output,date+'.json'),JSON.stringify(model));
